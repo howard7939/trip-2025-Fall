@@ -1,0 +1,136 @@
+import os
+
+CSS_FILE = 'style.css'
+
+def main():
+    css_content = """/* Reset & Base */
+:root { 
+    --bg-body: #f4f6f8; --bg-card: #ffffff;
+    --text-main: #2d3748; --text-light: #718096;
+    --accent: #3182ce; --accent-light: #ebf8ff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.08);
+    --radius: 12px; 
+    --nav-height: 64px;
+    --sub-nav-height: 54px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    margin: 0; padding: 0;
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: var(--bg-body); color: var(--text-main);
+    padding-top: var(--nav-height);
+    line-height: 1.6;
+}
+/* 導航列與基礎樣式 */
+nav.main-nav {
+    position: fixed; top: 0; left: 0; width: 100%; height: var(--nav-height);
+    background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0,0,0,0.05); z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+}
+.nav-inner { width: 100%; max-width: 900px; padding: 0 20px; display: flex; overflow-x: auto; white-space: nowrap; }
+.nav-inner::-webkit-scrollbar { display: none; }
+nav.main-nav a {
+    text-decoration: none; color: var(--text-light); font-weight: 500; 
+    margin-right: 8px; padding: 8px 16px; border-radius: 20px; font-size: 0.95rem; transition: all 0.2s;
+}
+nav.main-nav a:hover { color: var(--accent); background: white; box-shadow: var(--shadow-sm); }
+nav.main-nav a.active { background-color: var(--text-main); color: white; box-shadow: 0 2px 5px rgba(45, 55, 72, 0.3); }
+
+nav.sub-nav {
+    position: sticky; top: var(--nav-height); 
+    left: 0; width: 100%; height: var(--sub-nav-height);
+    background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(0,0,0,0.08); z-index: 900;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.sub-nav-inner { 
+    width: 100%; max-width: 720px; padding: 0 20px; 
+    display: flex; overflow-x: auto; white-space: nowrap; gap: 8px;
+    align-items: center; height: 100%;
+}
+.sub-nav-inner::-webkit-scrollbar { display: none; }
+nav.sub-nav a {
+    text-decoration: none; color: var(--text-light); font-size: 0.9rem; font-weight: 500;
+    padding: 6px 16px; border-radius: 20px; background: transparent;
+    transition: all 0.2s; border: 1px solid transparent; flex-shrink: 0;
+}
+nav.sub-nav a:hover { color: var(--accent); background: #f7fafc; }
+nav.sub-nav a.active { 
+    background-color: var(--accent); color: white; 
+    box-shadow: 0 2px 4px rgba(49, 130, 206, 0.4);
+}
+
+main { width: 100%; max-width: 720px; margin: 0 auto; padding: 40px 20px 100px 20px; }
+.page-header { text-align: center; margin-bottom: 50px; }
+.page-header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.02em; }
+
+/* Anchor Offset Fix */
+.section-anchor { scroll-margin-top: 130px; display: block; height: 0; width: 0; visibility: hidden; }
+
+.section-header {
+    margin: 50px 0 25px 0; padding-bottom: 10px;
+    border-bottom: 2px solid #edf2f7;
+    color: var(--text-main); display: flex; align-items: center;
+}
+.section-header h2 { margin: 0; font-size: 1.4rem; color: var(--accent); }
+.section-dot { 
+    width: 10px; height: 10px; background: var(--accent); 
+    border-radius: 50%; margin-right: 12px; display: inline-block;
+}
+
+/* Grid & Cards */
+.home-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+.day-card { 
+    background: var(--bg-card); border-radius: var(--radius); overflow: hidden;
+    text-decoration: none; color: var(--text-main); box-shadow: var(--shadow-sm);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column;
+}
+.day-card:hover { transform: translateY(-6px); box-shadow: 0 10px 15px rgba(0,0,0,0.08); }
+.card-img-wrap { height: 180px; width: 100%; background: #e2e8f0; position: relative; overflow: hidden; }
+.card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+.day-card:hover .card-img-wrap img { transform: scale(1.05); }
+.card-content { padding: 20px; }
+
+/* Timeline */
+.timeline-container { position: relative; padding-left: 20px; }
+.timeline-container::before { content: ''; position: absolute; left: 0; top: 20px; bottom: 0; width: 2px; background: #e2e8f0; }
+.media-item { 
+    background: var(--bg-card); padding: 15px; border-radius: var(--radius);
+    box-shadow: var(--shadow-md); margin-bottom: 40px; position: relative; animation: fadeIn 0.6s ease-out forwards;
+}
+.media-item::before {
+    content: ''; position: absolute; left: -25px; top: 30px; width: 12px; height: 12px; background: white;
+    border: 3px solid var(--accent); border-radius: 50%; z-index: 1;
+}
+
+/* Media Content (CSS Aspect Ratio fallback) */
+.media-content { width: 100%; border-radius: 8px; overflow: hidden; background: #edf2f7; }
+/* 這裡重要：確保圖片自適應但有基本樣式 */
+img, iframe { width: 100%; height: auto; display: block; }
+iframe { aspect-ratio: 16 / 9; border: none; } 
+
+.caption { padding: 15px 5px 5px 5px; font-size: 1rem; color: #4a5568; }
+.filename-ref { font-size: 0.75rem; color: #a0aec0; margin-top: 6px; font-family: monospace; }
+.journal-block {
+    position: relative; background: linear-gradient(to right, #ffffff, #fcfcfc);
+    border: 1px solid #e2e8f0; border-left: 5px solid var(--accent);
+    padding: 30px 40px; margin: 60px 0 60px 20px; border-radius: 8px; box-shadow: var(--shadow-md);
+}
+.pagination { display: flex; justify-content: space-between; margin-top: 80px; padding-top: 40px; border-top: 1px dashed #cbd5e0; }
+.btn { 
+    padding: 12px 24px; background: white; text-decoration: none; color: var(--text-main); 
+    border: 1px solid #e2e8f0; border-radius: 30px; font-weight: 600; box-shadow: var(--shadow-sm);
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 600px) { main { padding: 30px 15px; } .timeline-container::before { left: 0; } .media-item::before { left: -21px; } .journal-block { padding: 20px; margin-left: 0; } }
+"""
+    with open(CSS_FILE, 'w', encoding='utf-8') as f:
+        f.write(css_content)
+    print(f"已生成: {CSS_FILE}")
+
+if __name__ == "__main__":
+    main()
